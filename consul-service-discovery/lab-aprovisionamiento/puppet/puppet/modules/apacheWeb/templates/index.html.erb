@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Servidor Web Apache - Aprovisionado con Puppet</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .info {
+            background-color: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>¡Bienvenido al Servidor Apache!</h1>
+        <div class="info">
+            <h2>Información del Sistema</h2>
+            <p><strong>Hostname:</strong> <%= @fqdn %></p>
+            <p><strong>Sistema Operativo:</strong> <%= @operatingsystem %> <%= @operatingsystemrelease %></p>
+            <p><strong>Dirección IP:</strong> <%= @ipaddress %></p>
+            <p><strong>Arquitectura:</strong> <%= @architecture %></p>
+        </div>
+        <div class="info">
+            <h2>Aprovisionamiento</h2>
+            <p>Este servidor web ha sido aprovisionado automáticamente usando <strong>Puppet</strong> y <strong>Vagrant</strong>.</p>
+            <p>Fecha de aprovisionamiento: <%= Time.now %></p>
+        </div>
+        <div class="info">
+            <h2>Servicios Instalados</h2>
+            <ul>
+                <li>Apache2 Web Server</li>
+                <li>Configuración automática de servicios</li>
+                <li>Página web personalizada</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

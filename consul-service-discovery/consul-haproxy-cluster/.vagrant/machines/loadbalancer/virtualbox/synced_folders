@@ -1,0 +1,1 @@
+{"virtualbox":{"/vagrant":{"type":"virtualbox","guestpath":"/vagrant","hostpath":"C:/Users/diego/consul-service-discovery/consul-haproxy-cluster","disabled":false,"__vagrantfile":true}}}

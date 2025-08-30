@@ -1,0 +1,54 @@
+config:
+  target: http://192.168.50.10
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up phase"
+    - duration: 120
+      arrivalRate: 10
+      name: "Normal load"
+    - duration: 60
+      arrivalRate: 20
+      name: "High load"
+  processor: "./functions.js"
+  variables:
+    nodes: ["web1", "web2"]
+
+scenarios:
+  - name: "Basic functionality test"
+    weight: 50
+    flow:
+      - get:
+          url: "/"
+          capture:
+            json: "$.node.name"
+            as: "node_name"
+      - think: 1
+      - function: "logResponse"
+      
+  - name: "Health check test"
+    weight: 20
+    flow:
+      - get:
+          url: "/health"
+          expect:
+            - statusCode: 200
+            - contentType: json
+            
+  - name: "Info endpoint test"
+    weight: 20
+    flow:
+      - get:
+          url: "/info"
+          expect:
+            - statusCode: 200
+            - hasProperty: "node"
+            
+  - name: "Work simulation"
+    weight: 10
+    flow:
+      - get:
+          url: "/work?duration=100"
+          expect:
+            - statusCode: 200
+      - think: 2

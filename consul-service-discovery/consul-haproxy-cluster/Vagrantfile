@@ -1,0 +1,72 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  if Vagrant.has_plugin? "vagrant-vbguest"
+    config.vbguest.no_install = true
+    config.vbguest.auto_update = false
+    config.vbguest.no_remote = true
+  end
+
+  # Configuración común
+  config.vm.box = "bento/ubuntu-22.04"
+  config.vm.boot_timeout = 600
+  config.ssh.insert_key = false
+  config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+
+  # Load Balancer + Consul Server
+  config.vm.define "loadbalancer" do |lb|
+    lb.vm.hostname = "loadbalancer"
+    lb.vm.network :private_network, ip: "192.168.50.10"
+    
+    # Port forwarding para acceso desde host
+    lb.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+    lb.vm.network "forwarded_port", guest: 8404, host: 8404, host_ip: "127.0.0.1"  # HAProxy stats
+    lb.vm.network "forwarded_port", guest: 8500, host: 8500, host_ip: "127.0.0.1"  # Consul UI
+    
+    lb.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"
+      vb.cpus = 2
+    end
+
+    # Aprovisionamiento
+    lb.vm.provision "shell", path: "scripts/install_base.sh"
+    lb.vm.provision "shell", path: "scripts/setup_consul_server.sh"
+    lb.vm.provision "shell", path: "scripts/setup_haproxy.sh"
+    lb.vm.provision "shell", path: "scripts/setup_consul_template.sh"
+  end
+
+  # Web Node 1
+  config.vm.define "web1" do |web|
+    web.vm.hostname = "web1"
+    web.vm.network :private_network, ip: "192.168.50.11"
+    
+    web.vm.provider "virtualbox" do |vb|
+      vb.memory = "768"
+      vb.cpus = 1
+    end
+
+    # Aprovisionamiento
+    web.vm.provision "shell", path: "scripts/install_base.sh"
+    web.vm.provision "shell", path: "scripts/setup_nodejs.sh"
+    web.vm.provision "shell", path: "scripts/setup_consul_agent.sh", args: ["web1", "192.168.50.11"]
+    web.vm.provision "shell", path: "scripts/setup_web_service.sh", args: ["web1", "3001"]
+  end
+
+  # Web Node 2  
+  config.vm.define "web2" do |web|
+    web.vm.hostname = "web2"
+    web.vm.network :private_network, ip: "192.168.50.12"
+    
+    web.vm.provider "virtualbox" do |vb|
+      vb.memory = "768"
+      vb.cpus = 1
+    end
+
+    # Aprovisionamiento
+    web.vm.provision "shell", path: "scripts/install_base.sh"
+    web.vm.provision "shell", path: "scripts/setup_nodejs.sh" 
+    web.vm.provision "shell", path: "scripts/setup_consul_agent.sh", args: ["web2", "192.168.50.12"]
+    web.vm.provision "shell", path: "scripts/setup_web_service.sh", args: ["web2", "3002"]
+  end
+end

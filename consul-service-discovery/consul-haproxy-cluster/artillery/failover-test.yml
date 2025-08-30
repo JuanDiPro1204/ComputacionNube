@@ -1,0 +1,39 @@
+config:
+  target: http://192.168.50.10
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      name: "Normal operation - both nodes"
+    - duration: 60
+      arrivalRate: 10
+      name: "One node down simulation"
+    - duration: 60
+      arrivalRate: 10
+      name: "Both nodes down simulation" 
+    - duration: 60
+      arrivalRate: 10
+      name: "Recovery simulation"
+  processor: "./functions.js"
+
+scenarios:
+  - name: "Continuous requests"
+    weight: 80
+    flow:
+      - get:
+          url: "/"
+          capture:
+            json: "$.node.name"
+            as: "active_node"
+          expect:
+            - statusCode: [200, 503]
+      - function: "trackNodeResponses"
+      - think: 1
+      
+  - name: "Health status monitoring"
+    weight: 20
+    flow:
+      - get:
+          url: "/health"
+          expect:
+            - statusCode: [200, 503]
+      - think: 2

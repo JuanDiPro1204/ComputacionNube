@@ -1,0 +1,29 @@
+{
+  "name": "consul-web-service",
+  "version": "1.0.0",
+  "description": "Node.js web service for Consul + HAProxy cluster demo",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "consul",
+    "haproxy",
+    "nodejs",
+    "microservices",
+    "service-discovery"
+  ],
+  "author": "Lab",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
